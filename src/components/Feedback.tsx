@@ -6,7 +6,10 @@ export type FeedbackState = { type: "success" | "error"; message: string } | nul
 
 const SUCCESS_TIMEOUT_MS = 3000;
 
-/** Dismissible banner. Success messages hide on their own; errors stay until the user closes them. */
+/**
+ * Dismissible toast fixed to the bottom of the viewport, so it is seen even when the action
+ * happened far down the page. Success messages hide on their own; errors stay until closed.
+ */
 export function Feedback({ state, onClose }: { state: FeedbackState; onClose: () => void }) {
   useEffect(() => {
     if (state?.type !== "success") return;
