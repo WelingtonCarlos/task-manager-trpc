@@ -154,3 +154,22 @@ a {
     flex-direction: column;
   }
 }
+
+.feedback {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+}
+
+.feedback--success {
+  background: var(--success-bg);
+  color: var(--success-fg);
+}
+
+.feedback--error {
+  background: var(--error-bg);
+  color: var(--danger);
+}
