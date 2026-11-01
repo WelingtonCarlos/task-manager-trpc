@@ -21,7 +21,7 @@ Development plan for the task manager. Each item is a GitHub issue resolved in i
 - [x] Task list page with SSR (`feat/task-list-ssr`)
 - [x] Delete tasks from the list with feedback (`feat/delete-task`)
 - [x] Create and edit task form with validation (`feat/task-form`)
-- [ ] Loading, error and not-found states (`feat/app-states`)
+- [x] Loading, error and not-found states (`feat/app-states`)
 
 ## Phase 4: Bonus
 
