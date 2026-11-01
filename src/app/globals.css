@@ -50,6 +50,8 @@ a {
   max-width: 720px;
   margin: 0 auto;
   padding: 16px;
+  /* Room at the end of the page so the feedback toast never covers the last item. */
+  padding-bottom: 96px;
 }
 
 .muted {
@@ -155,13 +157,35 @@ a {
   }
 }
 
+/* Toast fixed to the bottom of the viewport, so feedback is visible wherever the user has scrolled. */
 .feedback {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 100;
+  width: min(480px, calc(100vw - 32px));
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  border-radius: 6px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid currentColor;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.15);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .feedback {
+    animation: feedback-in 0.2s ease-out;
+  }
+}
+
+@keyframes feedback-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
 }
 
 .feedback--success {
