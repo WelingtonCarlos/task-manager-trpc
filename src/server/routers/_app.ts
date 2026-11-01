@@ -1,8 +1,10 @@
 import { createCallerFactory, publicProcedure, router } from "../trpc";
+import { taskRouter } from "./task";
 
 export const appRouter = router({
   /** Liveness check: `GET /api/trpc/health`. */
   health: publicProcedure.query(() => ({ status: "ok" as const })),
+  task: taskRouter,
 });
 
 /** Only the *type* is shared with the client, so no server code reaches the browser bundle. */

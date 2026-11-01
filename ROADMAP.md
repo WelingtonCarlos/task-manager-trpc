@@ -12,7 +12,7 @@ Development plan for the task manager. Each item is a GitHub issue resolved in i
 
 - [x] Configure tRPC server and HTTP handler (`feat/trpc-setup`)
 - [x] Implement in-memory task store (`feat/task-store`)
-- [ ] Task CRUD procedures with validation and error handling (`feat/task-crud`)
+- [x] Task CRUD procedures with validation and error handling (`feat/task-crud`)
 - [ ] Unit tests for task procedures (`test/task-router`)
 
 ## Phase 3: Frontend: task management UI
