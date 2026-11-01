@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import type { inferRouterOutputs } from "@trpc/server";
 import { getErrorMessage } from "@/lib/errors";
@@ -42,7 +43,9 @@ export function TaskList({ initialPage, pageSize }: Props) {
       <Feedback state={feedback} onClose={clearFeedback} />
       <p className="muted">{data.total} task(s)</p>
       {tasks.length === 0 ? (
-        <p className="empty">No tasks yet.</p>
+        <p className="empty">
+          No tasks yet. <Link href="/tasks/new">Create the first one</Link>.
+        </p>
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
@@ -51,10 +54,15 @@ export function TaskList({ initialPage, pageSize }: Props) {
               task={task}
               busy={deletingId === task.id}
               actions={
-                <DeleteTaskButton
-                  isDeleting={deletingId === task.id}
-                  onConfirm={() => deleteTask.mutate({ id: task.id })}
-                />
+                <>
+                  <Link href={`/tasks/${task.id}/edit`} className="button button--ghost">
+                    Edit
+                  </Link>
+                  <DeleteTaskButton
+                    isDeleting={deletingId === task.id}
+                    onConfirm={() => deleteTask.mutate({ id: task.id })}
+                  />
+                </>
               }
             />
           ))}
