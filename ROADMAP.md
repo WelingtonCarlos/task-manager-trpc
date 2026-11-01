@@ -25,7 +25,7 @@ Development plan for the task manager. Each item is a GitHub issue resolved in i
 
 ## Phase 4: Bonus
 
-- [ ] Infinite scroll on the task list (`feat/infinite-scroll`)
+- [x] Infinite scroll on the task list (`feat/infinite-scroll`)
 - [ ] Final documentation pass (`docs/final-docs`)
 
 ## Out of scope

@@ -9,6 +9,7 @@ import { trpc } from "@/trpc/client";
 import { DeleteTaskButton } from "./DeleteTaskButton";
 import { Feedback, type FeedbackState } from "./Feedback";
 import { TaskItem } from "./TaskItem";
+import { useInfiniteScroll } from "./useInfiniteScroll";
 
 type TaskPage = inferRouterOutputs<AppRouter>["task"]["list"];
 
@@ -23,9 +24,25 @@ export function TaskList({ initialPage, pageSize }: Props) {
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const clearFeedback = useCallback(() => setFeedback(null), []);
 
-  // The SSR page seeds the cache, so the list is on screen immediately and the client doesn't refetch it on mount.
-  const { data } = trpc.task.list.useQuery({ limit: pageSize }, { initialData: initialPage });
-  const tasks = data.items;
+  const query = trpc.task.list.useInfiniteQuery(
+    { limit: pageSize },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      // The SSR page seeds the cache as the first page, so the client only fetches the pages after it.
+      initialData: { pages: [initialPage], pageParams: [null] },
+    },
+  );
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = query;
+  const pages = query.data?.pages ?? [initialPage];
+  const tasks = pages.flatMap((page) => page.items);
+  const total = pages[0]?.total ?? 0;
+
+  const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
+  const sentinelRef = useInfiniteScroll({
+    hasMore: hasNextPage,
+    isLoading: isFetchingNextPage || query.isFetchNextPageError,
+    onLoadMore: loadMore,
+  });
 
   const deleteTask = trpc.task.delete.useMutation({
     onMutate: () => setFeedback(null),
@@ -41,7 +58,7 @@ export function TaskList({ initialPage, pageSize }: Props) {
   return (
     <>
       <Feedback state={feedback} onClose={clearFeedback} />
-      <p className="muted">{data.total} task(s)</p>
+      <p className="muted">{total} task(s)</p>
       {tasks.length === 0 ? (
         <p className="empty">
           No tasks yet. <Link href="/tasks/new">Create the first one</Link>.
@@ -67,6 +84,24 @@ export function TaskList({ initialPage, pageSize }: Props) {
             />
           ))}
         </ul>
+      )}
+
+      <div ref={sentinelRef} aria-hidden="true" />
+      {isFetchingNextPage && (
+        <p className="muted center" role="status">
+          Loading more tasks…
+        </p>
+      )}
+      {query.isFetchNextPageError && (
+        <p className="error center" role="alert">
+          {getErrorMessage(query.error)}{" "}
+          <button type="button" className="link" onClick={loadMore}>
+            Try again
+          </button>
+        </p>
+      )}
+      {!hasNextPage && tasks.length > 0 && (
+        <p className="muted center">You&apos;ve reached the end of the list.</p>
       )}
     </>
   );
