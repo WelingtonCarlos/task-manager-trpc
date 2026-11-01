@@ -104,3 +104,53 @@ a {
   font: inherit;
   text-decoration: underline;
 }
+
+.empty {
+  padding: 32px 0;
+  text-align: center;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: opacity 0.2s;
+}
+
+.task--busy {
+  opacity: 0.5;
+}
+
+.task__body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.task__body p {
+  margin: 4px 0;
+}
+
+.task__actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  flex-shrink: 0;
+}
+
+@media (max-width: 520px) {
+  .task {
+    flex-direction: column;
+  }
+}

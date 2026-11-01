@@ -18,7 +18,7 @@ Development plan for the task manager. Each item is a GitHub issue resolved in i
 ## Phase 3: Frontend: task management UI
 
 - [x] tRPC client provider and server-side caller (`feat/trpc-client`)
-- [ ] Task list page with SSR (`feat/task-list-ssr`)
+- [x] Task list page with SSR (`feat/task-list-ssr`)
 - [ ] Delete tasks from the list with feedback (`feat/delete-task`)
 - [ ] Create and edit task form with validation (`feat/task-form`)
 - [ ] Loading, error and not-found states (`feat/app-states`)
