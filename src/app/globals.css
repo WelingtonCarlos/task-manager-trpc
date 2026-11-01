@@ -135,13 +135,18 @@ a {
   opacity: 0.5;
 }
 
+/* Stacked in a column so title, description and date never run together on one line,
+   whether or not the task has a description. */
 .task__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .task__body p {
-  margin: 4px 0;
+  margin: 0;
 }
 
 .task__actions {
