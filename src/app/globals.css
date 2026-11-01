@@ -173,3 +173,32 @@ a {
   background: var(--error-bg);
   color: var(--danger);
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form label {
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.form input,
+.form textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.form [aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.form__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
