@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { TRPCProvider } from "@/trpc/client";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,12 +12,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <header className="header">
-          <Link href="/" className="brand">
-            Task Manager
-          </Link>
-        </header>
-        <main className="container">{children}</main>
+        <TRPCProvider>
+          <header className="header">
+            <Link href="/" className="brand">
+              Task Manager
+            </Link>
+          </header>
+          <main className="container">{children}</main>
+        </TRPCProvider>
       </body>
     </html>
   );
