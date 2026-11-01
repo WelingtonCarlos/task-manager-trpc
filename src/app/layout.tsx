@@ -17,6 +17,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="brand">
               Task Manager
             </Link>
+            <Link href="/tasks/new" className="button">
+              + New task
+            </Link>
           </header>
           <main className="container">{children}</main>
         </TRPCProvider>
