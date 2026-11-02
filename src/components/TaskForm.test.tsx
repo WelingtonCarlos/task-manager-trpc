@@ -24,7 +24,7 @@ describe("TaskForm", () => {
     await userEvent.click(screen.getByRole("button", { name: "Create task" }));
 
     await expect.poll(() => router.push.mock.calls).toEqual([["/?saved=created"]]);
-    expect(store.list(0, 10).total).toBe(1);
+    expect(store.list(null, 10).total).toBe(1);
   });
 
   it("reports an updated task to the list", async () => {
@@ -50,6 +50,6 @@ describe("TaskForm", () => {
     const submit = screen.getByRole("button", { name: /Saving|Create task/ });
     expect(submit).toHaveProperty("disabled", true);
     await userEvent.click(submit);
-    expect(store.list(0, 10).total).toBe(1);
+    expect(store.list(null, 10).total).toBe(1);
   });
 });

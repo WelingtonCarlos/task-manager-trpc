@@ -14,12 +14,20 @@ export type Task = {
 export type NewTask = { titulo: string; descricao?: string };
 export type TaskChanges = { titulo?: string; descricao?: string };
 
+/** Position in the list: the last task of the previous page. */
+export type TaskCursor = Pick<Task, "dataCriacao" | "id">;
+
 export type TaskPage = {
   items: Task[];
-  /** Offset of the next page, or `null` when this is the last one. */
-  nextCursor: number | null;
+  /** Where the next page starts, or `null` when this is the last one. */
+  nextCursor: TaskCursor | null;
   total: number;
 };
+
+/** Newest first. The id breaks ties, so tasks created in the same millisecond keep a stable order. */
+function compareTasks(a: TaskCursor, b: TaskCursor): number {
+  return b.dataCriacao - a.dataCriacao || (a.id < b.id ? 1 : a.id > b.id ? -1 : 0);
+}
 
 /**
  * In-memory task repository.
@@ -31,11 +39,17 @@ export function createTaskStore(initial: Task[] = []) {
   const tasks = new Map(initial.map((task) => [task.id, task]));
 
   return {
-    /** Newest first, offset-based pagination. */
-    list(offset: number, limit: number): TaskPage {
-      const all = [...tasks.values()].sort((a, b) => b.dataCriacao - a.dataCriacao);
-      const items = all.slice(offset, offset + limit);
-      const nextCursor = offset + limit < all.length ? offset + limit : null;
+    /**
+     * Newest first, keyset pagination: a page starts right after the cursor's position in the order,
+     * so tasks created or deleted between requests don't repeat or skip items, even the cursor's own.
+     */
+    list(cursor: TaskCursor | null, limit: number): TaskPage {
+      const all = [...tasks.values()].sort(compareTasks);
+      const remaining = cursor ? all.filter((task) => compareTasks(task, cursor) > 0) : all;
+      const items = remaining.slice(0, limit);
+      const last = items.at(-1);
+      const nextCursor =
+        last && remaining.length > limit ? { dataCriacao: last.dataCriacao, id: last.id } : null;
       return { items, nextCursor, total: all.length };
     },
 

@@ -13,17 +13,17 @@ function taskNotFound(id: string): never {
 const byIdInput = z.object({ id: taskIdSchema });
 
 export const taskRouter = router({
-  /** Paginated list, newest first. `cursor` is the offset returned as `nextCursor` by the previous page. */
+  /** Paginated list, newest first. `cursor` is the `nextCursor` returned by the previous page. */
   list: publicProcedure
     .input(
       z
         .object({
           limit: z.number().int().min(1).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE),
-          cursor: z.number().int().min(0).nullish(),
+          cursor: z.object({ dataCriacao: z.number().int(), id: taskIdSchema }).nullish(),
         })
         .default({ limit: DEFAULT_PAGE_SIZE }),
     )
-    .query(({ ctx, input }) => ctx.store.list(input.cursor ?? 0, input.limit)),
+    .query(({ ctx, input }) => ctx.store.list(input.cursor ?? null, input.limit)),
 
   byId: publicProcedure
     .input(byIdInput)

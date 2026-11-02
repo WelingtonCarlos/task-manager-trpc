@@ -49,7 +49,9 @@ export function TaskList({ initialPage, pageSize, savedMessage }: Props) {
   const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
   const sentinelRef = useInfiniteScroll({
     hasMore: hasNextPage,
-    isLoading: isFetchingNextPage || query.isFetchNextPageError,
+    // `isFetching` also covers background refetches: fetching the next page would cancel them,
+    // and a refetch that follows a delete must finish or the deleted task stays on screen.
+    isLoading: query.isFetching || query.isFetchNextPageError,
     onLoadMore: loadMore,
   });
 
@@ -57,8 +59,8 @@ export function TaskList({ initialPage, pageSize, savedMessage }: Props) {
     onMutate: () => setFeedback(null),
     onSuccess: () => setFeedback({ type: "success", message: "Task deleted." }),
     onError: (error) => setFeedback({ type: "error", message: getErrorMessage(error) }),
-    // Offsets shift after a delete, so refetch instead of patching the cached pages. Also after an
-    // error: a task that no longer exists (deleted in another tab) must leave the list.
+    // Refetch instead of patching the cached pages, whose cursors may point at the deleted task. Also
+    // after an error: a task that no longer exists (deleted in another tab) must leave the list.
     onSettled: () => utils.task.list.invalidate(),
   });
   const deletingId = deleteTask.isPending ? deleteTask.variables?.id : undefined;
