@@ -90,7 +90,7 @@ src/
 - **Store injected through the tRPC context.** Procedures never import the store directly, so every test builds an isolated store and runs without shared state.
 - **One validation schema, two consumers.** `src/lib/task-schema.ts` is the source of truth for the server and the form; the client check is for UX, the server check is the guarantee.
 - **SSR handed off to the client cache.** The server-rendered page is passed as `initialData` to `useInfiniteQuery`, so the list is visible immediately and the client fetches only the following pages.
-- **Offset cursor.** With an in-memory `Map`, an offset is the simplest working cursor. After a delete the list is refetched instead of patched, because offsets shift. With a real database, a keyset cursor (`dataCriacao` + `id`) would be the better choice.
+- **Keyset cursor.** A page starts after the last task seen (`dataCriacao` + `id`), not at a numeric offset, so tasks created or deleted while scrolling don't repeat or skip items. The same cursor maps directly to an indexed query on a real database. Today the store still sorts on every call, which is fine at this size.
 - **`dataCriacao` as a millisecond timestamp.** It serializes as plain JSON, so no transformer such as superjson is needed. Dates are formatted with a fixed locale and time zone to avoid hydration mismatches.
 - **Store kept on `globalThis`.** It survives hot reloads in development; a module-level variable would be wiped on every save.
 - **Inline delete confirmation** instead of `window.confirm`, which blocks the page and can't be styled.

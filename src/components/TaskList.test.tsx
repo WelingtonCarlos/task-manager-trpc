@@ -17,7 +17,7 @@ describe("TaskList", () => {
 
   it("removes a task that another tab already deleted when deleting it fails", async () => {
     const store = createTaskStore(createSampleTasks(3));
-    const initialPage = store.list(0, PAGE_SIZE);
+    const initialPage = store.list(null, PAGE_SIZE);
     const target = initialPage.items[0]!;
     renderWithTrpc(<TaskList initialPage={initialPage} pageSize={PAGE_SIZE} />, store);
 
@@ -37,7 +37,11 @@ describe("TaskList", () => {
     window.history.replaceState(null, "", "/?saved=created");
     const store = createTaskStore();
     renderWithTrpc(
-      <TaskList initialPage={store.list(0, PAGE_SIZE)} pageSize={PAGE_SIZE} savedMessage="Task created." />,
+      <TaskList
+        initialPage={store.list(null, PAGE_SIZE)}
+        pageSize={PAGE_SIZE}
+        savedMessage="Task created."
+      />,
       store,
     );
 

@@ -40,7 +40,7 @@ describe("task router", () => {
 
     it.each(["", "   "])("rejects an empty title (%j)", async (titulo) => {
       expect(await errorCode(api.task.create({ titulo }))).toBe("BAD_REQUEST");
-      expect(store.list(0, 10).total).toBe(0);
+      expect(store.list(null, 10).total).toBe(0);
     });
 
     it("rejects a title that is too long", async () => {
@@ -53,11 +53,17 @@ describe("task router", () => {
       for (let i = 0; i < 3; i++) await api.task.create({ titulo: `Task ${i}` });
       const page = await api.task.list({ limit: 2 });
       expect(page.items).toHaveLength(2);
-      expect(page.nextCursor).toBe(2);
+      const last = page.items.at(-1);
+      expect(page.nextCursor).toEqual({ dataCriacao: last?.dataCriacao, id: last?.id });
 
       const next = await api.task.list({ limit: 2, cursor: page.nextCursor });
       expect(next.items).toHaveLength(1);
       expect(next.nextCursor).toBeNull();
+    });
+
+    it("rejects a malformed cursor", async () => {
+      const cursor = { dataCriacao: 1, id: "not-a-uuid" };
+      expect(await errorCode(api.task.list({ cursor }))).toBe("BAD_REQUEST");
     });
 
     it("works without input", async () => {
