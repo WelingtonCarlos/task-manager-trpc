@@ -49,7 +49,9 @@ export function TaskList({ initialPage, pageSize, savedMessage }: Props) {
   const loadMore = useCallback(() => void fetchNextPage(), [fetchNextPage]);
   const sentinelRef = useInfiniteScroll({
     hasMore: hasNextPage,
-    isLoading: isFetchingNextPage || query.isFetchNextPageError,
+    // `isFetching` also covers background refetches: fetching the next page would cancel them,
+    // and a refetch that follows a delete must finish or the deleted task stays on screen.
+    isLoading: query.isFetching || query.isFetchNextPageError,
     onLoadMore: loadMore,
   });
 
