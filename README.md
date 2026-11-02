@@ -11,7 +11,7 @@ A task manager built with **Next.js 15** and **tRPC**. Tasks are kept in memory 
 - **Meaningful errors**: `BAD_REQUEST` with a readable message for invalid input, `NOT_FOUND` when a task doesn't exist
 - **Server-side rendered list**: the first page of tasks comes rendered in the HTML
 - **Delete from the list** with inline confirmation, loading state and success/error feedback
-- **Create and edit form** with client-side validation and loading/error states
+- **Create and edit form** with client-side validation and loading, success and error states
 - **Infinite scroll**: the next pages load as you scroll, using `IntersectionObserver`
 - **Loading page for the list, error and 404 pages for every route**, with a real HTTP 404 for a missing task
 
@@ -25,7 +25,7 @@ A task manager built with **Next.js 15** and **tRPC**. Tasks are kept in memory 
 
 ## Getting started
 
-Requirements: Node.js 20+ (the version used in development is in `.nvmrc`).
+Requirements: Node.js 22.12+, 24 or 26+, the versions supported by the test runner (the version used in development is in `.nvmrc`).
 
 ```bash
 npm install
@@ -43,7 +43,7 @@ No environment variables or external services are needed. The store starts with 
 | `npm run dev`       | Start the development server |
 | `npm run build`     | Production build             |
 | `npm start`         | Run the production build     |
-| `npm test`          | Run unit tests (Vitest)      |
+| `npm test`          | Run the tests (Vitest)       |
 | `npm run lint`      | Lint with ESLint             |
 | `npm run format`    | Format with Prettier         |
 | `npm run typecheck` | Type-check with `tsc`        |
