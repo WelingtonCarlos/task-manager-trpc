@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { inferRouterOutputs } from "@trpc/server";
 import { getErrorMessage } from "@/lib/errors";
 import type { AppRouter } from "@/server/routers/_app";
@@ -17,12 +17,21 @@ type Props = {
   /** First page rendered on the server. */
   initialPage: TaskPage;
   pageSize: number;
+  /** Outcome of a save made on the form that redirected here. */
+  savedMessage?: string | null;
 };
 
-export function TaskList({ initialPage, pageSize }: Props) {
+export function TaskList({ initialPage, pageSize, savedMessage }: Props) {
   const utils = trpc.useUtils();
-  const [feedback, setFeedback] = useState<FeedbackState>(null);
+  const [feedback, setFeedback] = useState<FeedbackState>(
+    savedMessage ? { type: "success", message: savedMessage } : null,
+  );
   const clearFeedback = useCallback(() => setFeedback(null), []);
+
+  // Drop the message from the URL, so reloading the page doesn't announce the save again.
+  useEffect(() => {
+    if (savedMessage) window.history.replaceState(null, "", "/");
+  }, [savedMessage]);
 
   const query = trpc.task.list.useInfiniteQuery(
     { limit: pageSize },

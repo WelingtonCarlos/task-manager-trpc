@@ -27,14 +27,15 @@ export function TaskForm({ task }: Props) {
   const handlers = {
     onSuccess: async () => {
       await utils.task.list.invalidate();
-      router.push("/");
+      router.push(task ? "/?saved=updated" : "/?saved=created");
       router.refresh(); // re-run the SSR list so it reflects the change
     },
     onError: (error: unknown) => setFeedback({ type: "error", message: getErrorMessage(error) }),
   };
   const create = trpc.task.create.useMutation(handlers);
   const update = trpc.task.update.useMutation(handlers);
-  const isSaving = create.isPending || update.isPending;
+  // Success counts too: the mutation ends before the navigation does, and the form must stay locked until it leaves.
+  const isSaving = create.isPending || update.isPending || create.isSuccess || update.isSuccess;
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
