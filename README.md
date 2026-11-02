@@ -13,7 +13,7 @@ A task manager built with **Next.js 15** and **tRPC**. Tasks are kept in memory 
 - **Delete from the list** with inline confirmation, loading state and success/error feedback
 - **Create and edit form** with client-side validation and loading/error states
 - **Infinite scroll**: the next pages load as you scroll, using `IntersectionObserver`
-- **Loading, error and 404 pages** for every route
+- **Loading page for the list, error and 404 pages for every route**, with a real HTTP 404 for a missing task
 
 ## Stack
 
@@ -69,10 +69,11 @@ Both paths share the same validation, errors and types. The client imports only 
 src/
 ├── app/
 │   ├── api/trpc/[trpc]/route.ts   # tRPC HTTP endpoint
-│   ├── page.tsx                   # Task list (SSR first page)
+│   ├── (list)/page.tsx            # Task list (SSR first page)
+│   ├── (list)/loading.tsx         # Loading state of the list only (see design decisions)
 │   ├── tasks/new/page.tsx         # Create
 │   ├── tasks/[id]/edit/page.tsx   # Edit (task loaded via SSR)
-│   ├── loading.tsx, error.tsx, not-found.tsx
+│   ├── error.tsx, not-found.tsx
 │   └── layout.tsx                 # tRPC + React Query provider
 ├── components/                    # TaskList, TaskItem, TaskForm, Feedback, hooks
 ├── lib/                           # Shared schema, error and date helpers
@@ -93,6 +94,7 @@ src/
 - **Offset cursor.** With an in-memory `Map`, an offset is the simplest working cursor. After a delete the list is refetched instead of patched, because offsets shift. With a real database, a keyset cursor (`dataCriacao` + `id`) would be the better choice.
 - **`dataCriacao` as a millisecond timestamp.** It serializes as plain JSON, so no transformer such as superjson is needed. Dates are formatted with a fixed locale and time zone to avoid hydration mismatches.
 - **Store kept on `globalThis`.** It survives hot reloads in development; a module-level variable would be wiped on every save.
+- **`loading.tsx` scoped to the list.** A loading boundary above the edit page makes Next.js send the response headers before the task is looked up, so a missing task would answer HTTP 200. Inside the `(list)` route group, it can't affect the edit route.
 - **Inline delete confirmation** instead of `window.confirm`, which blocks the page and can't be styled.
 - **Minimal dependencies.** Plain CSS, no UI library.
 
