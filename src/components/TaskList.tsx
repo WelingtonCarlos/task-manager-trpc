@@ -55,12 +55,11 @@ export function TaskList({ initialPage, pageSize, savedMessage }: Props) {
 
   const deleteTask = trpc.task.delete.useMutation({
     onMutate: () => setFeedback(null),
-    onSuccess: () => {
-      setFeedback({ type: "success", message: "Task deleted." });
-      // Offsets shift after a delete, so refetch instead of patching the cached pages.
-      return utils.task.list.invalidate();
-    },
+    onSuccess: () => setFeedback({ type: "success", message: "Task deleted." }),
     onError: (error) => setFeedback({ type: "error", message: getErrorMessage(error) }),
+    // Offsets shift after a delete, so refetch instead of patching the cached pages. Also after an
+    // error: a task that no longer exists (deleted in another tab) must leave the list.
+    onSettled: () => utils.task.list.invalidate(),
   });
   const deletingId = deleteTask.isPending ? deleteTask.variables?.id : undefined;
 
